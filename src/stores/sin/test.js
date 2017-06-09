@@ -81,13 +81,12 @@ test.cb(
 );
 
 test.cb(
-    'should remove sins from passed storage calling removeItem with key "SinTrackerSins"',
+    'should remove sins from passed storage calling setItem with key "SinTrackerSins"',
     t => {
         let _storage;
         const sinStore = new SinStore({
             getItem: name => _storage,
-            setItem: () => {},
-            removeItem: name => {
+            setItem: name => {
                 t.is(name, 'SinTrackerSins');
                 t.end();
             },

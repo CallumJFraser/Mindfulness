@@ -1,6 +1,6 @@
 import test from 'ava';
 import React from 'react';
-import { ReactDOM, TestUtils } from 'react-dom';
+import { shallow } from 'enzyme';
 import SinItem from './index';
 
 const testItem = {
@@ -8,17 +8,10 @@ const testItem = {
     text: 'temp',
 };
 
-function renderComponent() {
-    const component = TestUtils.renderIntoDocument(<SinItem item={testItem} />);
-    return ReactDOM.findDOMNode(component);
-}
-
 test('should render with filled name input and remove button', t => {
-    const sinItem = renderComponent();
-    const nameInput = sinItem.querySelectorAll('textarea')[0];
-    const removeButton = sinItem.querySelectorAll('button');
+    const wrapper = shallow(<SinItem item={testItem} />);
 
-    t.is(nameInput.textContent, 'temp');
-    t.is(removeButton.length, 1);
-    t.is(removeButton[0].textContent, 'Remove');
+    t.is(wrapper.find('textarea').text(), 'temp');
+    t.true(wrapper.find('button').exists());
+    t.is(wrapper.find('button').text(), 'Remove');
 });
