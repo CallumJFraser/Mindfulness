@@ -1,16 +1,48 @@
-import { React, Component } from 'react';
+import React, { Component } from 'react';
+import styled from 'styled-components';
 import Dispatcher from '../../dispatcher';
 import SinStore from '../../stores/sin';
-import SinItem from '../sinItem';
+import sinItem from '../sinItem';
+
+const _SinStore = new SinStore(localStorage);
+
+const SinListContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+`;
+const Heading = styled.h2``;
+const SinContainer = styled.div`
+    display: flex;
+    width: 100%;
+`;
+const SinItem = styled(sinItem)`
+    display: flex;
+    width: 100%;
+`;
+
+const AddButton = styled.button`
+    display: flex;
+    width: 100%;
+    margin: 1rem;
+    background-color: #F00000;
+    border: none;
+    :hover {
+        background-color: #C00000;
+    }
+`;
 
 class SinList extends Component {
-    getInitialState() {
-        return {
-            items: SinStore.getSins(),
+    constructor(props) {
+        super(props);
+        this.state = {
+            items: _SinStore.get(),
         };
+        this._addItem = this._addItem.bind(this);
+        this._onChange = this._onChange.bind(this);
     }
+
     componentDidMount() {
-        var taskId = SinStore.subscribe(payload => {
+        var taskId = _SinStore.subscribe(payload => {
             if (payload.action === 'UPDATE') {
                 this._onChange();
             }
@@ -20,7 +52,7 @@ class SinList extends Component {
         });
     }
     componentWillUnmount() {
-        SinStore.unsubscribe(this.state.taskId);
+        _SinStore.unsubscribe(this.state.taskId);
     }
     _addItem() {
         Dispatcher.publish({
@@ -30,7 +62,7 @@ class SinList extends Component {
     }
     _onChange() {
         this.setState({
-            items: SinStore.getSins(),
+            items: _SinStore.get(),
         });
     }
     render() {
@@ -39,19 +71,18 @@ class SinList extends Component {
             Sins.push(<SinItem key={item.id} item={item} />);
         });
         return (
-            <div className="col-sm-12">
-                <h2>Sins</h2>
-                <ul>
+            <SinListContainer>
+                <Heading>Sins</Heading>
+                <SinContainer>
                     {Sins}
-                </ul>
-                <button
+                </SinContainer>
+                <AddButton
                     type="button"
-                    className="btn btn-primary"
                     onClick={this._addItem}
                 >
                     Add
-                </button>
-            </div>
+                </AddButton>
+            </SinListContainer>
         );
     }
 }
